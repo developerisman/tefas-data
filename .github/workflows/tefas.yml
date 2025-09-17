@@ -1,0 +1,27 @@
+name: Fetch TEFAS Data
+
+on:
+  schedule:
+    - cron: "30 16 * * 1-5"   # Hafta içi her gün 19:30 TR zamanı
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run script
+        run: python scripts/fetch_tefas.py
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/*.json
+          git commit -m "Update TEFAS data"
+          git push
