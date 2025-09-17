@@ -8,9 +8,15 @@ def fetch_fon(fon_kod, start_date, end_date):
     headers = {"User-Agent": "Mozilla/5.0"}
     r = requests.get(url, headers=headers, timeout=15)
 
-    root = ET.fromstring(r.text)
-    ns = {"ns": "http://schemas.datacontract.org/2004/07/TefasTr.Controllers"}
+    # Log: ne geldiğini görelim
+    print(f"{fon_kod} -> {r.status_code}, first 200 chars: {r.text[:200]}")
 
+    try:
+        root = ET.fromstring(r.text)
+    except Exception as e:
+        return {"error": str(e), "raw": r.text[:200]}
+
+    ns = {"ns": "http://schemas.datacontract.org/2004/07/TefasTr.Controllers"}
     prices = []
     for item in root.findall(".//ns:GraphicData", ns):
         tarih = item.find("ns:Tarih", ns).text
@@ -21,7 +27,7 @@ def fetch_fon(fon_kod, start_date, end_date):
 
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
-    fonlar = ["AEF", "TZE", "YAY"]  # burada istediğin fon kodlarını yaz
+    fonlar = ["AEF"]  # test için tek fon
     all_data = {}
 
     for kod in fonlar:
@@ -29,5 +35,3 @@ if __name__ == "__main__":
 
     with open("docs/latest.json", "w", encoding="utf-8") as f:
         json.dump(all_data, f, ensure_ascii=False, indent=2)
-
-    print("Toplam fon:", len(all_data))
