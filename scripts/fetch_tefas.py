@@ -10,18 +10,16 @@ def fetch_fon(fon_kod, start_date, end_date):
 
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
-   fonlar = [
-    "AEF", "ASY", "TTE", "YAY", "TEF", "ZPE", "HDF", "TUA", "TZE", "YAY",
-    "AFH", "TAF", "VDF", "ISF", "AKF", "HSF", "KTF", "NNF", "QNB", "SEF",
-    "KUF", "CAF", "ANF", "YKF", "YVF", "TEB", "HAL", "GAR", "VAK", "ODE",
-    "TSF", "YEF", "YHF", "ASF", "BGF", "FHF", "YMF", "YUF", "YVF", "BNF",
-    "ISY", "ISB", "VIO", "YGO", "KLF", "ETF", "NNY", "HLT", "ZAF", "IDF",
-    "YUF", "QNF", "ANB", "HSY", "TTF", "KDY", "KMF", "AAY", "VGF", "YNF",
-    "TEF", "SFF", "GAF", "PIF", "SDF", "BGY", "CAY", "BNP", "ING", "ICF",
-    "BNR", "EAF", "KHF", "ISG", "AKY", "HSK", "NNH", "TGF", "VIF", "YBY",
-    "ISF", "AKF", "HSF", "KTF", "QNB", "SEF", "KUF", "CAF", "ANF", "YKF",
-    "YVF", "TEB", "HAL", "GAR", "VAK", "ODE", "TSF", "YEF", "YHF", "ASF"
-]
+    fonlar = [
+        "AEF", "ASY", "TTE", "YAY", "TEF", "ZPE", "HDF", "TUA", "TZE", "AFH",
+        "TAF", "VDF", "ISF", "AKF", "HSF", "KTF", "NNF", "QNB", "SEF", "KUF",
+        "CAF", "ANF", "YKF", "YVF", "TEB", "HAL", "GAR", "VAK", "ODE", "TSF",
+        "YEF", "YHF", "ASF", "BGF", "FHF", "YMF", "BNF", "ISY", "ISB", "VIO",
+        "YGO", "KLF", "ETF", "NNY", "HLT", "ZAF", "IDF", "QNF", "ANB", "HSY",
+        "TTF", "KDY", "KMF", "AAY", "VGF", "YNF", "SFF", "GAF", "PIF", "SDF",
+        "BGY", "CAY", "BNP", "ING", "ICF", "BNR", "EAF", "KHF", "ISG", "AKY",
+        "HSK", "NNH", "TGF", "VIF", "YBY"
+    ]
     all_data = {}
     for kod in fonlar:
         try:
@@ -32,4 +30,3 @@ if __name__ == "__main__":
 
     with open("docs/latest.json", "w", encoding="utf-8") as f:
         json.dump(all_data, f, ensure_ascii=False, indent=2)
-
