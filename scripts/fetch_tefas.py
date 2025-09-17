@@ -1,22 +1,18 @@
 import requests
+import xml.etree.ElementTree as ET
 import json
-from datetime import datetime
 
-def fetch_fon(fon_kod, start_date, end_date):
-    url = f"https://www.tefas.gov.tr/api/DB/BindHistoryGraphData?FonKod={fon_kod}&startDate={start_date}&endDate={end_date}"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    try:
-        r = requests.get(url, headers=headers, timeout=10)
-        return r.json()
-    except Exception as e:
-        return {"error": str(e)}
+url = "https://www.tefas.gov.tr/api/DB/BindCanceledFunds"  # örnek iptal fon servisi
+headers = {"User-Agent": "Mozilla/5.0"}
+r = requests.get(url, headers=headers, timeout=10)
 
-if __name__ == "__main__":
-    today = datetime.now().strftime("%Y-%m-%d")
-    fonlar = ["AEF", "ASY", "TTE", "YAY", "TEF"]  # önce küçük liste dene
-    all_data = {}
-    for kod in fonlar:
-        all_data[kod] = fetch_fon(kod, today, today)
+funds = []
+root = ET.fromstring(r.text)
 
-    with open("docs/latest.json", "w", encoding="utf-8") as f:
-        json.dump(all_data, f, ensure_ascii=False, indent=2)
+for fund in root.findall(".//{http://schemas.datacontract.org/2004/07/TefasTr.Controllers}FundCode"):
+    funds.append(fund.text)
+
+with open("docs/latest.json", "w", encoding="utf-8") as f:
+    json.dump(funds, f, ensure_ascii=False, indent=2)
+
+print("Toplam iptal fon:", len(funds))
