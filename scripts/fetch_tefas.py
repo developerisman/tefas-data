@@ -1,37 +1,35 @@
 import requests
-import pandas as pd
-from datetime import datetime
 import json
-from io import StringIO
+from datetime import datetime
 
-def fetch_tefas(date=None):
-    if date is None:
-        date = datetime.now().strftime("%Y-%m-%d")
-
-    url = f"https://www.tefas.gov.tr/MutualFunds/FonKarsilastirma.aspx?FonKod=&Tarih={date}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
-    }
-
+def fetch_fon(fon_kod, start_date, end_date):
+    url = f"https://www.tefas.gov.tr/api/DB/BindHistoryGraphData?FonKod={fon_kod}&startDate={start_date}&endDate={end_date}"
+    headers = {"User-Agent": "Mozilla/5.0"}
     r = requests.get(url, headers=headers, timeout=30)
-
-    # pandas future warning fix: StringIO kullan
-    dfs = pd.read_html(StringIO(r.text), decimal=",", thousands=".")
-    if not dfs:
-        raise ValueError("TEFAS tablosu bulunamadı")
-
-    df = dfs[0]
-    return df.to_dict(orient="records")
+    return r.json()
 
 if __name__ == "__main__":
-    data = fetch_tefas()
     today = datetime.now().strftime("%Y-%m-%d")
-
-    with open(f"docs/funds_{today}.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+   fonlar = [
+    "AEF", "ASY", "TTE", "YAY", "TEF", "ZPE", "HDF", "TUA", "TZE", "YAY",
+    "AFH", "TAF", "VDF", "ISF", "AKF", "HSF", "KTF", "NNF", "QNB", "SEF",
+    "KUF", "CAF", "ANF", "YKF", "YVF", "TEB", "HAL", "GAR", "VAK", "ODE",
+    "TSF", "YEF", "YHF", "ASF", "BGF", "FHF", "YMF", "YUF", "YVF", "BNF",
+    "ISY", "ISB", "VIO", "YGO", "KLF", "ETF", "NNY", "HLT", "ZAF", "IDF",
+    "YUF", "QNF", "ANB", "HSY", "TTF", "KDY", "KMF", "AAY", "VGF", "YNF",
+    "TEF", "SFF", "GAF", "PIF", "SDF", "BGY", "CAY", "BNP", "ING", "ICF",
+    "BNR", "EAF", "KHF", "ISG", "AKY", "HSK", "NNH", "TGF", "VIF", "YBY",
+    "ISF", "AKF", "HSF", "KTF", "QNB", "SEF", "KUF", "CAF", "ANF", "YKF",
+    "YVF", "TEB", "HAL", "GAR", "VAK", "ODE", "TSF", "YEF", "YHF", "ASF"
+]
+    all_data = {}
+    for kod in fonlar:
+        try:
+            data = fetch_fon(kod, today, today)
+            all_data[kod] = data
+        except Exception as e:
+            all_data[kod] = {"error": str(e)}
 
     with open("docs/latest.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(all_data, f, ensure_ascii=False, indent=2)
 
