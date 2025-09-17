@@ -1,27 +1,37 @@
-name: Fetch TEFAS Data
+name: Update TEFAS/Fintables Data
 
 on:
+  workflow_dispatch:   # Manuel tetikleme için
   schedule:
-    - cron: "30 16 * * 1-5"   # Hafta içi her gün 19:30 TR zamanı
-  workflow_dispatch:
+    - cron: '0 6 * * *'   # Her gün sabah 06:00 UTC çalıştır
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+
       - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run script
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run TEFAS script
         run: python scripts/fetch_tefas.py
-      - name: Commit and push
+
+      - name: Run Fintables script
+        run: python scripts/fetch_fintables.py
+
+      - name: Commit changes
         run: |
           git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add docs/*.json
-          git commit -m "Update TEFAS data"
+          git config user.email "github-actions@github.com"
+          git add docs/latest.json
+          git commit -m "Update data"
           git push
