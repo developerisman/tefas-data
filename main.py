@@ -14,8 +14,8 @@ except Exception as e:
     # ---- 2. fallback: eğer import yapılamazsa, repo içindeki bir script'i çalıştır ve stdout'tan JSON oku
     import subprocess
     def get_funds():
-        # scripts/fetch.py örnektir; repo'da benzer bir script varsa kullan
-        p = subprocess.run(["python", "scripts/fetch.py"], capture_output=True, text=True)
+        # scripts/fetch_tefas.py örnektir; repo'da benzer bir script varsa kullan
+        p = subprocess.run(["python", "scripts/fetch_tefas.py"], capture_output=True, text=True)
         try:
             return json.loads(p.stdout)
         except Exception:
